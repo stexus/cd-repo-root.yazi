@@ -5,7 +5,7 @@ Changes directory to the root of the git repository you are currently in.
 ## Installation
 
 ```sh
-ya pkg add ciarandg/cd-git-root
+ya pkg add stexus/cd-repo-root
 ```
 
 ## Usage
@@ -13,10 +13,11 @@ ya pkg add ciarandg/cd-git-root
 Add this to your `~/.config/yazi/keymap.toml`:
 
 ```toml
-[[manager.prepend_keymap]]
-on   = ["g", "r"]
-run  = "plugin cd-git-root"
-desc = "Go to git repo root"
+[[mgr.prepend_keymap]]
+desc = "Go to repo root"
+on   = "b"
+run  = "plugin cd-repo-root"
+
 ```
 
 ## License
