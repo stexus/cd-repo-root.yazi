@@ -1,43 +1,32 @@
 --- @since 25.5.31
+
 local get_cwd = ya.sync(function()
 	return tostring(cx.active.current.cwd)
 end)
 
-local function dir_exists(path)
-	local f = io.open(path .. "/.", "r")
-	if f then
-		f:close()
-		return true
-	end
-	return false
-end
-
-local function get_repo_toplevel()
-	local path = get_cwd()
-
-	while path and path ~= "" do
-		if dir_exists(path .. "/.hg") or dir_exists(path .. "/.git") then
-			return path .. "/"
+-- Walk up from `url` until a directory containing `.git` is found.
+-- `.git` is a directory in a regular checkout, but a *file* (`gitdir: ...`)
+-- in linked worktrees and submodules, so accept either: this way a worktree
+-- resolves to its own root instead of the directory holding all worktrees.
+local function find_repo_root(url)
+	while url do
+		if fs.cha(url:join(".git"), false) then
+			return url
 		end
-		local parent = path:match("(.+)/[^/]+$")
-		if not parent then
-			break
-		end
-		path = parent
+		url = url.parent
 	end
-
 	return nil
 end
 
 return {
 	entry = function()
-		local destination = get_repo_toplevel()
-		if destination then
-			ya.emit("cd", { Url(destination) })
+		local root = find_repo_root(Url(get_cwd()))
+		if root then
+			ya.emit("cd", { root })
 		else
 			ya.notify({
 				title = "Could not change directory!",
-				content = "You are not in a git or sapling repository.",
+				content = "You are not in a git repository.",
 				timeout = 3,
 				level = "error",
 			})

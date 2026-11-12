@@ -2,6 +2,10 @@
 
 Changes directory to the root of the git repository you are currently in.
 
+Works with git worktrees: inside a linked worktree it jumps to the root of
+*that* worktree, not to the main repository or the directory holding all
+worktrees.
+
 ## Installation
 
 ```sh
